@@ -7,7 +7,9 @@ trigger:
 - main
 
 pool:
-  agent.name: 'RDTL01248'
+  name: Default
+  demands:
+    - agent.name -equals RDTL01248
 
 variables:
   buildConfiguration: 'Release'
