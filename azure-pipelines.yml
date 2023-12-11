@@ -7,9 +7,9 @@ trigger:
 - '*'
 
 pool:
-  name: Default
-  demands:
-    - agent.name -equals RDTL01248
+  name: Test
+  # demands:
+  #   - agent.name -equals RDTL01248
 
 variables:
   buildConfiguration: 'Release'
@@ -21,6 +21,11 @@ steps:
     packageType: sdk
     version: '6.x'
 
+- task: NodeTool@0
+  displayName: 'Run Node.js install'
+  inputs:
+    versionSpec: '12.x' 
+    
 - task: Npm@1
   displayName: 'Run npm install'
   inputs:
@@ -31,6 +36,9 @@ steps:
 
 - task: gulp@1
   displayName: 'Run gulp tasks'
+  inputs:
+    gulpFile: 'gulpfile.js'
+    gulpjs: 'node_modules/gulp/bin/gulp.js'
 
 - script: 'echo "$(Build.DefinitionName), $(Build.BuildId), $(Build.BuildNumber)" > buildinfo.txt'
   displayName: 'Write build info'
