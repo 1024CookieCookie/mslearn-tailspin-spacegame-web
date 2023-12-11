@@ -1,12 +1,5 @@
-trigger:
-- main
-
-pool:
-  vmImage: ubuntu-latest
-
-variables:
-  buildConfiguration: 'Release'
-
-steps:
-- script: dotnet build --configuration $(buildConfiguration)
-  displayName: 'dotnet build $(buildCOnfiguration)'
+- task: DotNetCoreCLI@2
+  dispalyName: 'Build the project'
+  inputs:
+    command: 'build'
+    projects: 'Tailspin.SpaceGame.Web/Tailspin.SpaceGame.Web.csproj'
