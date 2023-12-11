@@ -29,7 +29,7 @@ steps:
 - task: Npm@1
   inputs:
     command: 'install'
-    workingDir: '$(System.DefaultWorkingDirectory)/ID_CLIENT'
+    workingDir: '$(System.DefaultWorkingDirectory)'
     verbose: false
   displayName: 'npm install'
 
