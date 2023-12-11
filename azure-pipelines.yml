@@ -26,13 +26,6 @@ steps:
   inputs:
     verbose: false
 
-# - task: Npm@1
-#   inputs:
-#     command: 'install'
-#     workingDir: '$(System.DefaultWorkingDirectory)'
-#     verbose: false
-#   displayName: 'npm install'
-
 - script: './node_modules/.bin/node-sass Tailspin.SpaceGame.Web/wwwroot --output Tailspin.SpaceGame.Web/wwwroot'
   displayName: 'Compile Sass assets'
 
