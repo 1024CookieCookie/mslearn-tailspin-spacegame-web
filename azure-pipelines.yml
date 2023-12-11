@@ -11,12 +11,34 @@ pool:
   demands:
     - agent.name -equals RDTL01248
 
+# variables:
+#   buildConfiguration: 'Release'
+
+# steps:
+# - script: donet buld --configuration $(buildConfiguration)
+#   displayName: 'dotnet buld $(buildConfiguration)'
+
 variables:
+  solution: '**/*.sln'
+  buildPlatform: 'Any CPU'
   buildConfiguration: 'Release'
 
 steps:
-- script: donet buld --configuration $(buildConfiguration)
-  displayName: 'dotnet buld $(buildConfiguration)'
+- task: NuGetToolInstaller@1
+
+- task: NuGetCommand@2
+  inputs:
+    restoreSolution: '$(solution)'
+
+- task: VSBuild@1
+  inputs:
+    solution: '$(solution)'
+    msbuildArgs: '/p:DeployOnBuild=true /p:WebPublishMethod=Package /p:PackageAsSingleFile=true /p:SkipInvalidConfigurations=true /p:PackageLocation="$(build.artifactStagingDirectory)"'
+    platform: '$(buildPlatform)'
+    configuration: '$(buildConfiguration)'
+
+
+
 
 
 # # ASP.NET
