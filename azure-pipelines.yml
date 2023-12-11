@@ -7,9 +7,10 @@ trigger:
 - '*'
 
 pool:
-  name: Default
+  name: Test
   demands:
-    - agent.name -equals RDTL01248
+    - npm
+    # - agent.name -equals RDTL01248
 
 variables:
   buildConfiguration: 'Release'
