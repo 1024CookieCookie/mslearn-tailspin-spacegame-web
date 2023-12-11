@@ -8,9 +8,8 @@ trigger:
 
 pool:
   name: Test
-  demands:
-    - npm
-    # - agent.name -equals RDTL01248
+  # demands:
+  #   - agent.name -equals RDTL01248
 
 variables:
   buildConfiguration: 'Release'
@@ -22,6 +21,10 @@ steps:
     packageType: sdk
     version: '6.x'
 
+- task: NodeTool@0
+  inputs:
+    versionSpec: '12.x' 
+    
 - task: Npm@1
   displayName: 'Run npm install'
   inputs:
