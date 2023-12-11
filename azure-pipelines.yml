@@ -22,6 +22,7 @@ steps:
     version: '6.x'
 
 - task: NodeTool@0
+  displayName: 'Run Node install'
   inputs:
     versionSpec: '12.x' 
     
