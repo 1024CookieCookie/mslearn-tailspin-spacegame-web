@@ -1,10 +1,15 @@
-trigger:
-- '*'
+# ASP.NET
+# Build and test ASP.NET projects.
+# Add steps that publish symbols, save build artifacts, deploy, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/apps/aspnet/build-aspnet-4
 
+trigger:
+  - '*'
+  
 pool:
-  vmImage: 'ubuntu-20.04'
-  demands:
-  - npm
+  name: Test
+  # demands:
+  #   - agent.name -equals RDTL01248
 
 variables:
   buildConfiguration: 'Release'
@@ -13,10 +18,16 @@ variables:
 
 steps:
 - task: UseDotNet@2
-  displayName: 'Use .NET SDK $(dotnetSdkVersion)'
+  displayName: 'Use .NET SDK 6.x'
   inputs:
+    packageType: sdk
     version: '$(dotnetSdkVersion)'
 
+- task: NodeTool@0
+  displayName: 'Run Node.js install'
+  inputs:
+    versionSpec: '12.x' 
+    
 - task: Npm@1
   displayName: 'Run npm install'
   inputs:
@@ -27,6 +38,9 @@ steps:
 
 - task: gulp@1
   displayName: 'Run gulp tasks'
+  inputs:
+    gulpFile: 'gulpfile.js'
+    gulpjs: 'node_modules/gulp/bin/gulp.js'
 
 - script: 'echo "$(Build.DefinitionName), $(Build.BuildId), $(Build.BuildNumber)" > buildinfo.txt'
   displayName: 'Write build info'
@@ -46,13 +60,6 @@ steps:
     projects: '**/*.csproj'
 
 - task: DotNetCoreCLI@2
-  displayName: 'Install .NET Core tools from local manifest'
-  inputs:
-    command: custom
-    custom: tool
-    arguments: 'restore'
-
-- task: DotNetCoreCLI@2
   displayName: 'Run unit tests - $(buildConfiguration)'
   inputs:
     command: 'test'
@@ -65,22 +72,30 @@ steps:
   inputs:
     command: custom
     custom: tool
-    arguments: 'run reportgenerator -reports:$(Build.SourcesDirectory)/**/coverage.cobertura.xml -targetdir:$(Build.SourcesDirectory)/CodeCoverage -reporttypes:HtmlInline_AzurePipelines'
+    arguments: 'run reportgenerator -reports:$(Build.SourcesDirectory)/TestResults/Coverage/coverage.cobertura.xml -targetdir:$(Build.SourcesDirectory)/CodeCoverage -reporttypes:HtmlInline_AzurePipelines'
 
 - task: PublishCodeCoverageResults@1
   displayName: 'Publish code coverage report'
   inputs:
     codeCoverageTool: 'cobertura'
     summaryFileLocation: '$(Build.SourcesDirectory)/**/coverage.cobertura.xml'
-
+    
 - task: DotNetCoreCLI@2
   displayName: 'Publish the project - $(buildConfiguration)'
   inputs:
     command: 'publish'
     projects: '**/*.csproj'
     publishWebProjects: false
-    arguments: '--no-build --configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)/$(buildConfiguration)'
+    arguments: '--no-build --configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)/Release'
     zipAfterPublish: true
+
+# - template: templates/build.yml
+#   parameters:
+#     buildConfiguration: 'Debug'
+
+# - template: templates/build.yml
+#   parameters:
+#     buildConfiguration: 'Release'
 
 - task: PublishBuildArtifacts@1
   displayName: 'Publish Artifact: drop'
